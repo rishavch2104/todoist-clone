@@ -1,7 +1,8 @@
 import React from "react";
 import { Switch, Route, Link, BrowserRouter as Router } from "react-router-dom";
-import WelcomeScreen from "./components/WelcomeScreen";
-import Home from "./components/Home";
+import WelcomeScreen from "./components/landingpage/WelcomeScreen";
+import Home from "./components/homepage/Home";
+
 function App() {
   return (
     <Router>
