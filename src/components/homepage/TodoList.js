@@ -1,24 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Paper, Grid, List, Divider } from "@material-ui/core";
 import Todo from "./Todo";
-import { db } from "./../../firebase/auth";
+
+import { todosCollection, projectsCollection } from "./../../firebase/db";
 
 const TodoList = props => {
-  const [todos, settodos] = useState([]);
+  const [firebaseTodos, setFirebasetodos] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const { uid } = props;
+
   useEffect(() => {
-    const listener = db
-      .collection("todos")
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          const data = doc.data();
-          settodos(prev => {
-            return [...prev, data];
-          });
-        });
+    console.log(uid);
+
+    todosCollection.orderBy("createdOn", "desc").onSnapshot(querySnapshot => {
+      setFirebasetodos([]);
+      querySnapshot.forEach(doc => {
+        console.log({ data: doc.data() });
+        setFirebasetodos(firebaseTodos => [
+          ...firebaseTodos,
+          { id: doc.id, ...doc.data() }
+        ]);
       });
+    });
+    projectsCollection.onSnapshot(querySnapshot => {
+      setProjects([]);
+      querySnapshot.forEach(doc => {
+        setProjects(projects => [...projects, { id: doc.id, ...doc.data() }]);
+      });
+    });
   }, []);
-  console.log(todos);
+
+  console.log(firebaseTodos, projects);
   return (
     <Paper
       style={{
@@ -31,13 +43,11 @@ const TodoList = props => {
       elevation={0}
     >
       <List>
-        {todos.map((todo, i) => (
-          // To add a key to a fragment, we have to use the long-hand version
-          // rather than <> </>, we have to use <React.Fragment>
-          <React.Fragment key={i}>
+        {firebaseTodos.map(todo => (
+          <>
             <Todo {...todo} key={todo.id} />
-            {i < todos.length - 1 && <Divider />}
-          </React.Fragment>
+            <Divider />
+          </>
         ))}
       </List>
     </Paper>

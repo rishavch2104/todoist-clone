@@ -17,17 +17,16 @@ export const logoutUser = async () => {
   return await firebase.auth().signOut();
 };
 
-export const getUserData = async () => {
-  let user = auth.currentUser;
-  let name, email, photoUrl, uid, emailVerified;
+export const getUserData = () => {
+  let user = firebase.auth().currentUser;
+  let name, email, uid;
 
   if (user != null) {
     name = user.displayName;
     email = user.email;
-    photoUrl = user.photoURL;
-    emailVerified = user.emailVerified;
+
     uid = user.uid;
   }
-
-  console.log(name, email, photoUrl, uid, emailVerified);
+  console.log(uid);
+  return { name, email, uid };
 };

@@ -16,10 +16,6 @@ import styles from "../../styles/landingpageStyles/StyleLoginForm";
 import { loginUser } from "../../firebase/auth";
 import useForm from "../../hooks/useForm";
 import { BrowserRouter, Redirect } from "react-router-dom";
-import {
-  LoggedInContext,
-  LoggedInContextProvider
-} from "../../context/LoggedInContext";
 
 function LoginForm(props) {
   const { classes, history } = props;
@@ -27,7 +23,7 @@ function LoginForm(props) {
   const [loginError, toggleLoginError] = useToggle(false);
 
   const [formValues, setFormValues] = useState({ email: "", password: "" });
-  const [loggedin, toggleLoggedIn] = useContext(LoggedInContext);
+
   function handleChange(e) {
     e.preventDefault();
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
