@@ -1,140 +1,172 @@
 import React, { useState } from "react";
+import { withRouter } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Paper from "@material-ui/core/Paper";
+import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 
-import withStyles from "@material-ui/core/styles/withStyles";
-import styles from "../../styles/landingpageStyles/StyleLoginForm";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
 import { registerUser } from "../../firebase/auth";
-import useForm from "../../hooks/useForm";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-function Form(props) {
-  const { classes } = props;
-  // const { signUp, setsignUp } = useState({
-  //   email: "",
-  //   password: "",
-  //   firstName: "",
-  //   lastName: "",
-  //   rePassword: ""
-  // });
-  const [signUp, setSignUp] = useState({
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    rePassword: ""
-  });
-  console.log(signUp);
-  console.log(signUp);
-  const [signUpError, toggleSignupError] = useState(false);
-
-  function handleChange(e) {
-    e.preventDefault();
-    setSignUp({ ...signUp, [e.target.name]: e.target.value });
+const useStyles = makeStyles(theme => ({
+  main: {
+    height: "400px",
+    width: "auto",
+    display: "block",
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3),
+    [theme.breakpoints.up("sm")]: {
+      width: 400,
+      marginLeft: "auto",
+      marginRight: "auto"
+    }
+  },
+  paper: {
+    marginTop: theme.spacing.unit * 4,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme
+      .spacing.unit * 3}px`
+  },
+  avatar: {
+    margin: theme.spacing.unit,
+    backgroundColor: theme.palette.primary.main
+  },
+  form: {
+    width: "100%",
+    marginTop: theme.spacing.unit * 3
+  },
+  submit: {
+    marginTop: theme.spacing.unit * 3
+  }, 
+  button:{
+    color:theme.palette.primary.light
   }
+}));
 
-  const onRegisterClicked = async (e, email, password) => {
-    e.preventDefault();
-    console.log(email);
-
-    const signedUpUser = await registerUser(email, password);
-    // .then(() => {
-    //   this.props.history.push("/home");
-    // })
-    // .catch(e => {
-    //   toggleSignupError();
-    // });
-
-    console.log({ signedUpUser });
-
-    // if (signedInUser) {
-    //   this.props.history.push("/home");
-    // }
-    // if (!signedInUser && !loginError) {
-    //   toggleLoginError();
-    // }
+function SignUp(props) {
+  const { history } = props;
+  const classes = useStyles();
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: ""
+    },
+    validationSchema: Yup.object({
+      firstName: Yup.string()
+        .min(2, "Too Short")
+        .max(70, "Too Long")
+        .required("Required"),
+      lastName: Yup.string()
+        .min(2, "Too Short")
+        .max(70, "Too Long")
+        .required("Required"),
+      email: Yup.string()
+        .email("Invalid email")
+        .required("Required"),
+      password: Yup.string()
+        .min(6, "Too Short")
+        .max(60, "Too long")
+        .required("Required")
+    }),
+    onSubmit: async values => {
+      const signedUpUser = await registerUser(values.email, values.password);
+      redirect();
+    }
+  });
+  const redirect = () => {
+    history.push("/home");
   };
 
   return (
-    <main className={classes.main}>
+    <Box className={classes.main}>
       <Paper className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography variant="h5">signUp</Typography>
+        <Typography variant="h5">Sign Up</Typography>
 
-        <form className={classes.form}>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="firstname">First Name</InputLabel>
+        <form onSubmit={formik.handleSubmit}>
+          <FormControl margin="normal" fullWidth>
+            <InputLabel htmlFor="first-name">First Name</InputLabel>
             <Input
-              id="firstname"
+              id="firstName"
               name="firstName"
-              value={signUp.firstName}
-              onChange={handleChange}
-              autoFocus
+              type="text"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.firstName}
             />
+            {formik.touched.firstName && formik.errors.firstName ? (
+              <div>{formik.errors.firstName}</div>
+            ) : null}
           </FormControl>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="lastname">Last Name</InputLabel>
+          <FormControl margin="normal" fullWidth>
+            <InputLabel htmlFor="last-name">Last Name</InputLabel>
             <Input
-              id="lastname"
+              id="lastName"
               name="lastName"
-              value={signUp.lastName}
-              onChange={handleChange}
+              type="text"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.lastName}
             />
+            {formik.touched.lastName && formik.errors.lastName ? (
+              <div>{formik.errors.lastName}</div>
+            ) : null}
           </FormControl>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="email">email</InputLabel>
+          <FormControl margin="normal" fullWidth>
+            <InputLabel htmlFor="email">Email</InputLabel>
             <Input
               id="email"
               name="email"
-              value={signUp.email}
-              onChange={handleChange}
+              type="email"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.email}
             />
+            {formik.touched.email && formik.errors.email ? (
+              <div>{formik.errors.email}</div>
+            ) : null}
           </FormControl>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="password">password</InputLabel>
+          <FormControl margin="normal" fullWidth>
+            <InputLabel htmlFor="password">Password</InputLabel>
             <Input
               id="password"
               name="password"
-              value={signUp.password}
-              onChange={handleChange}
+              type="password"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.password}
             />
+            {formik.touched.passwor && formik.errors.passwor ? (
+              <div>{formik.errors.password}</div>
+            ) : null}
           </FormControl>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="password">Re-enter password</InputLabel>
-            <Input
-              id="password"
-              name="rePassword"
-              value={signUp.rePassword}
-              onChange={handleChange}
-            />
-          </FormControl>
-          <FormControlLabel
-            control={<Checkbox color="primary" />}
-            label="remember"
-          />
-          {signUpError && <Typography>Please Check Entered Details</Typography>}
           <Button
-            onClick={e => onRegisterClicked(e, signUp.email, signUp.password)}
             variant="contained"
             type="submit"
             fullWidth
-            color="primary"
+            color="secondary"
             className={classes.submit}
           >
-            signIn
+            Sign Up
           </Button>
         </form>
       </Paper>
-    </main>
+    </Box>
   );
 }
-export default withStyles(styles)(Form);
+
+export default withRouter(SignUp);

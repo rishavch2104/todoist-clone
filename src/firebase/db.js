@@ -1,4 +1,4 @@
-import * as firebase from "firebase";
+import firebase from "./firebaseConnect";
 import "firebase/firestore";
 
 const firestore = firebase.firestore();
@@ -18,7 +18,7 @@ export const userTodos = () => {
 };
 
 export const addTodo = async todo => {
-  return await firestore.collection("todos").add(todo);
+  return await todosCollection.add(todo);
 };
 
 export const deleteTodo = async id => {
@@ -32,7 +32,27 @@ export const editTodo = async (id, task) => {
   });
 };
 
+export const addProject = async project => {
+  return await firestore.collection("projects").add(project);
+};
+
+export const editProjectName = async (id, project) => {
+  let documentRef = projectsCollection.doc(id);
+  return documentRef.update({
+    name: project
+  });
+};
+
+export const deleteProject = async id => {
+  return await projectsCollection.doc(id).delete();
+};
 // export const getProjects= async user =>{
 
 //     todosCollection
 // }
+export const removeProjectFromTodo = (id, project) => {
+  let documentRef = todosCollection.doc(id);
+  return documentRef.update({
+    projects: project
+  });
+};

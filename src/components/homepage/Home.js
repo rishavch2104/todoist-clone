@@ -1,28 +1,50 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
 import { Typography, Box } from "@material-ui/core";
 import { getUserData } from "./../../firebase/auth";
-
+import { ThemeProvider } from "../../context/DarkModeContext";
+import { auth } from "./../../firebase/auth";
+import { AuthContext, AuthProvider } from "./../../context/AuthContext";
 import Navbar from "../Navbar";
 import Sidebar from "./Sidebar";
 import TodoList from "./TodoList";
-import AddTodo from "./AddTodo";
+import Temp from "./Sidebar";
 const Home = props => {
-  const { uid } = getUserData();
+  const { isLoggedIn, handleLoginChange, handleUidChange } = useContext(
+    AuthContext
+  );
+
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        handleUidChange(user.uid);
+        handleLoginChange(true);
+        console.log(user);
+      } else {
+        handleLoginChange(false);
+      }
+    });
+  });
+
   return (
-    <div>
-      <main>
-        <Navbar loggedin={true} />
+    <>
+      <Navbar handleDrawerToggle={handleDrawerToggle} />
 
-        <AddTodo />
+      <Box mt={2} width="100%" display="flex">
+        <Sidebar
+          mobileOpen={mobileOpen}
+          handleDrawerToggle={handleDrawerToggle}
+        />
 
-        <Box margin="20px 200px 20px 200px" display="flex" flexDirection="row">
-          <Sidebar uid={uid} />
-          <TodoList uid={uid} />
-        </Box>
-      </main>
-      )
-    </div>
+        <TodoList />
+      </Box>
+    </>
   );
 };
 

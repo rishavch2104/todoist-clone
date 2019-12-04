@@ -23,10 +23,12 @@ import { useState } from "react";
 const useForm = initialVal => {
   const [values, setValues] = useState(initialVal);
   function handleChange(e) {
-    console.log({ target: e });
+    const name = e.target.name;
+    const value = e.target.value;
+    console.log(e);
     setValues(prevValues => ({
       ...prevValues,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
   }
 
