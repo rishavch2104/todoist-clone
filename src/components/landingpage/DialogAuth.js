@@ -32,9 +32,8 @@ const DialogAuth = props => {
   const { buttons } = props;
   const [open, handleopen] = useState(false);
   const [isFlipped, setIsFlipped] = useState(true);
-
   const [currentTab, setCurrentTab] = useState("");
-
+  const classes = useStyles();
   const handleSigInUp = tab => {
     console.log(currentTab, tab);
     if (currentTab !== tab) {
@@ -56,7 +55,7 @@ const DialogAuth = props => {
   const handleClose = () => {
     handleopen(false);
   };
-  const styles = useStyles();
+
   return (
     <>
       {buttons.map(button => (
@@ -70,15 +69,13 @@ const DialogAuth = props => {
         </Button>
       ))}
       <Dialog
-        style={{ height: "800px" }}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
-        className="Login"
       >
-        <DialogTitle className={styles.box}>
+        <DialogTitle className={classes.box}>
           <Button
-            className={styles.button}
+            className={classes.button}
             style={{ diplay: "inline-block" }}
             size="large"
             onClick={() => handleSigInUp("login")}
@@ -87,14 +84,14 @@ const DialogAuth = props => {
           </Button>
           <Button
             style={{ diplay: "inline-block" }}
-            className={styles.button}
+            className={classes.button}
             size="large"
             onClick={() => handleSigInUp("signup")}
           >
             Signup
           </Button>
         </DialogTitle>
-        <DialogContent className={styles.DialogContent} dividers>
+        <DialogContent className={classes.DialogContent} dividers>
           <ReactCardFlip isFlipped={isFlipped} flipDirection="vertical">
             <Box>
               <LoginForm />

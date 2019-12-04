@@ -1,13 +1,24 @@
 import React from "react";
 import useInputState from "./../../hooks/useInputState";
 import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 import { editProjectName } from "./../../firebase/db";
 import { DialogContent, Dialog, DialogTitle } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
+import SaveIcon from "@material-ui/icons/Save";
+import makeStyles from "@material-ui/styles/makeStyles";
+
+const useStyles = makeStyles(theme => ({
+  dialogtitle: {
+    backgroundColor: theme.palette.primary.main,
+    textAlign: "center"
+  }
+}));
 
 const EditProject = props => {
   const { id, projectname, toggleEditForm } = props;
+  const classes = useStyles();
   const [value, handleChange, reset] = useInputState(projectname);
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -18,7 +29,7 @@ const EditProject = props => {
     setOpen(false);
   };
 
-  function onSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
     editProjectName(id, value);
     reset();
@@ -31,19 +42,22 @@ const EditProject = props => {
         <EditIcon />
       </IconButton>
       <Dialog fullWidth onClose={handleClose} open={open}>
-        <DialogTitle>Edit Project</DialogTitle>
+        <DialogTitle className={classes.dialogtitle}>Edit Project</DialogTitle>
         <DialogContent>
-          <form
-            onSubmit={onSubmit}
-            style={{ marginLeft: "1rem", width: "50%" }}
-          >
+          <form handleSubmit={handleSubmit}>
             <TextField
               margin="normal"
               value={value}
               onChange={handleChange}
-              fullWidth
               autoFocus
             />
+            <Button
+              startIcon={<SaveIcon />}
+              color="primary"
+              onClick={handleSubmit}
+            >
+              Save
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

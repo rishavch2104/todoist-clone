@@ -1,29 +1,39 @@
-import React, { useContext } from "react";
-import useToggle from "./../../hooks/useToggle";
-import EditTodoForm from "./EditTodoForm";
-import Chip from "@material-ui/core/Chip";
+import React from "react";
+import Typography from "@material-ui/core/Typography";
 import ListItem from "@material-ui/core/ListItem";
+import Grid from "@material-ui/core/Grid";
 import ListItemText from "@material-ui/core/ListItem";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
+import Chip from "@material-ui/core/Chip";
+
 import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-
-import { deleteTodo, removeProjectFromTodo } from "../../firebase/db";
-import { makeStyles, Typography } from "@material-ui/core";
-
+import makeStyles from "@material-ui/styles/makeStyles";
+import { deleteTodo, updateCompleted } from "../../firebase/db";
+import EditTodoForm from "./EditTodoForm";
 const useStyles = makeStyles(theme => ({
-  text: {
-    maxWidth: "70%",
-    wordWrap: "break-word",
-    whiteSpace: "initial"
+  task: {
+    width: "30vh",
+    [theme.breakpoints.down("md")]: {
+      width: "40vh"
+    },
+    [theme.breakpoints.down("sm")]: {
+      width: "30vh"
+    },
+
+    wordWrap: "break-word"
   }
 }));
 
 function Todo(props) {
-  const [isEditing, toggleisEditing] = useToggle(false);
-  const { id, task, project, completion_date } = props;
+  const {
+    id,
+    task,
+    project,
+    completion_timestamp,
+    completed,
+    completion_date
+  } = props;
   const classes = useStyles();
   async function onRemoveTodo() {
     try {
@@ -33,30 +43,42 @@ function Todo(props) {
       console.log({ e });
     }
   }
-  // const handleProjectDelete = e => {
-  //   console.info("You clicked the delete icon.");
-  //   let updatedProjects = projects.filter(project => project == e.target.name);
-  //   console.log(updatedProjects);
-  //   removeProjectFromTodo(id, updatedProjects);
-  // };
-  // console.log(projects);
 
   return (
     <>
-      <ListItem style={{ height: "64px" }}>
-        <ListItemText>
-          <Typography className={classes.text}>{task}</Typography>
-         
-          
-        </ListItemText>
-        {/* <ListItemText>{projects.map(pro => pro)}</ListItemText> */}
-        <ListItemSecondaryAction>
-          <Checkbox></Checkbox>
-          <IconButton aria-label="Delete" onClick={onRemoveTodo}>
-            <DeleteIcon />
-          </IconButton>
-          <EditTodoForm project={project} id={id} task={task} />
-        </ListItemSecondaryAction>
+      <ListItem>
+        <Grid container>
+          <Grid item md={6} sm={12} lg={6}>
+            <ListItemText>
+              <Typography
+                className={classes.task}
+                style={{ textDecoration: completed ? "line-through" : "none" }}
+              >
+                {task}
+              </Typography>
+            </ListItemText>
+          </Grid>
+          <Grid item md={3} sm={6} lg={3}>
+            <Chip label={completion_date} />
+            {project && <Chip label={project} />}
+          </Grid>
+
+          <Grid item md={3} sm={6} lg={3}>
+            <Checkbox
+              checked={completed}
+              onClick={() => updateCompleted(completed, id)}
+            />
+            <IconButton aria-label="Delete" onClick={onRemoveTodo}>
+              <DeleteIcon />
+            </IconButton>
+            <EditTodoForm
+              project={project}
+              id={id}
+              task={task}
+              completion_timestamp={completion_timestamp}
+            />
+          </Grid>
+        </Grid>
       </ListItem>
     </>
   );

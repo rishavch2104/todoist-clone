@@ -4,15 +4,14 @@ import { MuiThemeProvider } from "@material-ui/core";
 import WelcomeScreen from "./components/landingpage/WelcomeScreen";
 import Home from "./components/homepage/Home";
 import { AuthProvider } from "./context/AuthContext";
-
-import { DarkModeContext, DarkModeProvider } from "./context/DarkModeContext";
+import { DarkModeContext } from "./context/DarkModeContext";
 import { ProjectProvider } from "./context/ProjectContext";
-import { muithemeLight, muithemeDark } from "./Theme";
 import { TodoGroupContextProvider } from "./context/TodoGroupContext";
+import { muithemeLight, muithemeDark } from "./Theme";
 
 function App(props) {
   const { isDarkMode } = useContext(DarkModeContext);
-  console.log({ isDarkMode });
+
   return (
     <MuiThemeProvider theme={isDarkMode ? muithemeLight : muithemeDark}>
       <TodoGroupContextProvider>

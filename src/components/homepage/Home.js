@@ -1,20 +1,18 @@
 import React, { useContext, useState, useEffect } from "react";
+import { withRouter } from "react-router-dom";
+import Box from "@material-ui/core/Box";
 
-import { Typography, Box } from "@material-ui/core";
-import { getUserData } from "./../../firebase/auth";
-import { ThemeProvider } from "../../context/DarkModeContext";
 import { auth } from "./../../firebase/auth";
-import { AuthContext, AuthProvider } from "./../../context/AuthContext";
+import { AuthContext } from "./../../context/AuthContext";
 import Navbar from "../Navbar";
 import Sidebar from "./Sidebar";
 import TodoList from "./TodoList";
-import Temp from "./Sidebar";
-const Home = props => {
-  const { isLoggedIn, handleLoginChange, handleUidChange } = useContext(
-    AuthContext
-  );
 
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+const Home = props => {
+  const { history } = props;
+  const { handleLoginChange, handleUidChange } = useContext(AuthContext);
+
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -25,9 +23,9 @@ const Home = props => {
       if (user) {
         handleUidChange(user.uid);
         handleLoginChange(true);
-        console.log(user);
       } else {
         handleLoginChange(false);
+        history.push("/");
       }
     });
   });
@@ -48,4 +46,4 @@ const Home = props => {
   );
 };
 
-export default Home;
+export default withRouter(Home);

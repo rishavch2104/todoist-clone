@@ -5,18 +5,17 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
-import ListSubheader from "@material-ui/core/ListSubheader";
-import { makeStyles, useTheme } from "@material-ui/styles";
-import { TodoGroupContext } from "./../../context/TodoGroupContext";
-
 import CssBaseline from "@material-ui/core/CssBaseline";
-
 import Drawer from "@material-ui/core/Drawer";
 import Hidden from "@material-ui/core/Hidden";
-
+import NoteIcon from "@material-ui/icons/Note";
+import makeStyles from "@material-ui/styles/makeStyles";
+import useTheme from "@material-ui/styles/useTheme";
+import { TodoGroupContext } from "./../../context/TodoGroupContext";
 import Projects from "./Projects";
 
 const drawerWidth = 240;
+
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex"
@@ -46,18 +45,16 @@ const useStyles = makeStyles(theme => ({
 
 const Sidebar = props => {
   const { container, mobileOpen, handleDrawerToggle } = props;
-  const classes = useStyles();
   const { handleTodoGroupChange } = useContext(TodoGroupContext);
-
+  const classes = useStyles();
   const theme = useTheme();
 
   const drawer = (
     <div>
-      <div className={classes.toolbar} style={{ alignContent: "center" }}>
+      <div className={classes.toolbar}>
         <Typography
-          style={{ paddingTop: "20px", paddingLeft: "15px" }}
-          variant="h6"
-          noWrap
+          style={{ paddingTop: "20px", paddingLeft: "10px" }}
+          variant="h5"
         >
           Todoist
         </Typography>
@@ -65,7 +62,7 @@ const Sidebar = props => {
       <Divider />
 
       <List>
-        {["Today", "Tommorow", "Next 7 days"].map(text => (
+        {["Today", "Tommorow"].map(text => (
           <ListItem
             button
             onClick={e => handleTodoGroupChange(e, text)}
@@ -76,8 +73,6 @@ const Sidebar = props => {
           </ListItem>
         ))}
       </List>
-      <Divider />
-
       <Projects />
     </div>
   );

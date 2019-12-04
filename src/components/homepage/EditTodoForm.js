@@ -1,21 +1,51 @@
-import React, { useContext } from "react";
-import useInputState from "./../../hooks/useInputState";
+import React, { useState, useContext } from "react";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
-import InputLabel from "@material-ui/core/InputLabel";
+import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
+import makeStyles from "@material-ui/styles/makeStyles";
 import EditIcon from "@material-ui/icons/Edit";
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider
+} from "@material-ui/pickers";
 
+import DateFnsUtils from "@date-io/date-fns";
+import useInputState from "./../../hooks/useInputState";
 import { editTodo } from "./../../firebase/db";
-import { DialogContent, Dialog, DialogTitle } from "@material-ui/core";
+import { ProjectContext } from "./../../context/ProjectContext";
+
+const useStyles = makeStyles(theme => ({
+  form: { marginLeft: "1rem", display: "flex", flexDirection: "column" },
+  dialogtitle: {
+    backgroundColor: theme.palette.primary.main,
+    textAlign: "center"
+  }
+}));
 
 function EditTodoForm(props) {
-  const { toggleisEditing, id, task, projects } = props;
-  const [value, handleChange, reset] = useInputState(task);
+  const { id, task, project, completion_timestamp } = props;
+  const classes = useStyles();
+  const [textValue, handleTextChange, reset] = useInputState(task);
+  const { projects } = useContext(ProjectContext);
+  const [selectProject, setSelectProject] = useState(project);
+  const [open, setOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(
+    completion_timestamp.toDate()
+  );
 
-  const [open, setOpen] = React.useState(false);
-
+  const deleteProject = () => {
+    setSelectProject("");
+  };
+  const handleSelectChange = e => {
+    setSelectProject(e.target.value);
+  };
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -23,24 +53,15 @@ function EditTodoForm(props) {
   const handleClose = () => {
     setOpen(false);
   };
-  function onSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    editTodo(id, value);
+    editTodo(id, textValue, selectedDate, selectProject);
     reset();
-    toggleisEditing();
-  }
-  let list = [];
-  if (typeof projects != "undefined") {
-    list = projects.map(project => (
-      <MenuItem value={project} name={project}>
-        {project}
-      </MenuItem>
-    ));
-  }
-  function handleMenuChange(e) {
-    console.log(e);
   }
 
+  const handleDateChange = date => {
+    setSelectedDate(date);
+  };
   return (
     <>
       <IconButton aria-label="Edit" onClick={handleClickOpen}>
@@ -48,27 +69,44 @@ function EditTodoForm(props) {
       </IconButton>
 
       <Dialog fullWidth onClose={handleClose} open={open}>
-        <DialogTitle>Edit Todo</DialogTitle>
+        <DialogTitle className={classes.dialogtitle}>Edit Todo</DialogTitle>
         <DialogContent>
-          <form
-            onSubmit={onSubmit}
-            style={{ marginLeft: "1rem", width: "50%" }}
-          >
+          <form onSubmit={handleSubmit} className={classes.form}>
             <TextField
+              id="outlined-basic"
+              label="Task"
               margin="normal"
-              value={value}
-              onChange={handleChange}
+              value={textValue}
+              onChange={handleTextChange}
               fullWidth
               autoFocus
             />
-            <InputLabel id="demo-simple-select-label">Projects</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              onChange={handleMenuChange}
-            >
-              {list}
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                disableToolbar
+                format="MM/dd/yyyy"
+                margin="normal"
+                id="date-picker-dialog"
+                label="Completion Date"
+                value={selectedDate}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  "aria-label": "change date"
+                }}
+              />
+            </MuiPickersUtilsProvider>
+
+            <Typography variant="h6">
+              Project <DeleteIcon onClick={deleteProject} />
+            </Typography>
+            <Select value={selectProject} onChange={handleSelectChange}>
+              {projects.map(project => (
+                <MenuItem value={project.name}>{project.name}</MenuItem>
+              ))}
             </Select>
+            <Button variant="contained" color="primary" onClick={handleSubmit}>
+              Save
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

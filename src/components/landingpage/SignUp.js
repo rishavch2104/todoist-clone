@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { withRouter } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -9,16 +9,15 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
-
 import makeStyles from "@material-ui/core/styles/makeStyles";
-
-import { registerUser } from "../../firebase/auth";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { registerUser } from "../../firebase/auth";
+import { addUser } from "../../firebase/db";
 
 const useStyles = makeStyles(theme => ({
   main: {
-    height: "400px",
+    height: "50%",
     width: "auto",
     display: "block",
     marginLeft: theme.spacing(3),
@@ -30,11 +29,12 @@ const useStyles = makeStyles(theme => ({
     }
   },
   paper: {
-    marginTop: theme.spacing.unit * 4,
+    marginTop: theme.spacing.unit,
+
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme
+    padding: `${theme.spacing.unit}px ${theme.spacing.unit * 3}px ${theme
       .spacing.unit * 3}px`
   },
   avatar: {
@@ -47,9 +47,9 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     marginTop: theme.spacing.unit * 3
-  }, 
-  button:{
-    color:theme.palette.primary.light
+  },
+  button: {
+    color: theme.palette.primary.light
   }
 }));
 
@@ -81,8 +81,14 @@ function SignUp(props) {
         .required("Required")
     }),
     onSubmit: async values => {
-      const signedUpUser = await registerUser(values.email, values.password);
-      redirect();
+      registerUser(values.email, values.password).then(uid => {
+        addUser({
+          firstName: values.firstName,
+          lastName: values.lastName,
+          userId: uid
+        });
+        redirect();
+      });
     }
   });
   const redirect = () => {

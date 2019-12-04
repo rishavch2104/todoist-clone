@@ -3,29 +3,29 @@ import Navbar from "../Navbar";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-
-import { makeStyles } from "@material-ui/styles";
+import makeStyles from "@material-ui/styles/makeStyles";
 import DialogAuth from "./DialogAuth";
-
 import backgroundImage from "./../../img/todoistfinal.jpg";
 
 const useStyles = makeStyles({
-  root: {
-    backgroundImage: `url(${backgroundImage})`,
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "cover"
-  },
   image: {
     width: "80%",
     maxWidth: "700px",
     height: "auto"
+  },
+  griditem: {
+    display: "flex",
+    justifyContent: "center"
+  },
+  heading: {
+    marginBottom: "3rem"
   }
 });
 
 const WelcomeScreen = () => {
-  const styles = useStyles();
+  const classes = useStyles();
   return (
-    <div>
+    <>
       <Navbar />
       <Grid style={{ marginTop: "8rem" }} container>
         <Grid item lg={6} sm={12}>
@@ -36,21 +36,25 @@ const WelcomeScreen = () => {
             justifyContent="center"
             height="100%"
           >
-            <Typography
-              align="center"
-              style={{ marginBottom: "3rem" }}
-              variant="h1"
-            >
+            <Typography align="center" className={classes.heading} variant="h1">
               Organise it all with Todoist!
             </Typography>
-            <DialogAuth buttons={[{ name: "Get Started", value: "signup", props: {variant: 'contained', color: 'primary'} }]} />
+            <DialogAuth
+              buttons={[
+                {
+                  name: "Get Started",
+                  value: "signup",
+                  props: { variant: "contained", color: "primary" }
+                }
+              ]}
+            />
           </Box>
         </Grid>
-        <Grid style={{display:"flex", justifyContent:"center"}} item lg={6} sm={12}>
-          <img className={styles.image} src={backgroundImage} alt="back"></img>
+        <Grid className={classes.griditem} item lg={6} sm={12}>
+          <img className={classes.image} src={backgroundImage} alt="back"></img>
         </Grid>
       </Grid>
-    </div>
+    </>
   );
 };
 

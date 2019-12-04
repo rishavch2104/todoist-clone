@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import useToggle from "./../../hooks/useToggle";
+
 import EditProject from "./EditProject";
-import Divider from "@material-ui/core/Divider";
+
 import IconButton from "@material-ui/core/IconButton";
-import EditIcon from "@material-ui/icons/Edit";
+import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { ListItemSecondaryAction, Typography } from "@material-ui/core";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import { deleteProject } from "../../firebase/db";
 import { TodoGroupContext } from "./../../context/TodoGroupContext";
 
@@ -25,7 +25,6 @@ const Project = props => {
   }
   return (
     <>
-      {" "}
       <ListItem
         alignItems="flex-start"
         button

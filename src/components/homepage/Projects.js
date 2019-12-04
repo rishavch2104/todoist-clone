@@ -1,16 +1,26 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
+import makeStyles from "@material-ui/styles/makeStyles";
 import AddProject from "./AddProject";
+import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
 import { projectsCollection } from "./../../firebase/db";
 import Project from "./Project";
-import { Divider } from "@material-ui/core";
+
 import { AuthContext } from "./../../context/AuthContext";
 import { ProjectContext } from "./../../context/ProjectContext";
+const useStyles = makeStyles(theme => ({
+  heading: {
+    paddingLeft: "15px",
+    paddingTop: "30px"
+  }
+}));
 
 const Projects = props => {
   const { uid } = useContext(AuthContext);
+  const classes = useStyles();
   const { projects, setProjects } = useContext(ProjectContext);
   useEffect(() => {
     if (typeof uid !== "undefined") {
@@ -32,14 +42,19 @@ const Projects = props => {
   console.log(uid);
   return (
     <>
-      <ListItem button>
-        <ListItemText primary="Projects" />
+      <Box display="flex" flexDirection="row" justifyContent="space-between">
+        <Typography className={classes.heading} variant="h6">
+          Projects
+        </Typography>
         <AddProject uid={uid} />
-      </ListItem>
+      </Box>
+      <List>
+        <ListItem button></ListItem>
 
-      {projects.map(project => (
-        <Project {...project} key={project.key} />
-      ))}
+        {projects.map(project => (
+          <Project {...project} key={project.key} />
+        ))}
+      </List>
     </>
   );
 };
