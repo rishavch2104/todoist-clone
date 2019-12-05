@@ -85,7 +85,8 @@ function SignUp(props) {
         addUser({
           firstName: values.firstName,
           lastName: values.lastName,
-          userId: uid
+          userId: uid,
+          darkMode: false
         });
         redirect();
       });

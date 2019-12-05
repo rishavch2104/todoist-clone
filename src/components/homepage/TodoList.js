@@ -47,7 +47,7 @@ const TodoList = props => {
   pagetodo = firebaseTodos.filter(
     todo =>
       todo.completion_date ===
-      `${today.getDate()}-${today.getMonth()}-${today.getFullYear()}`
+      `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`
   );
 
   if (todoGroup === "Tommorow") {

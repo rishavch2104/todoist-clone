@@ -7,7 +7,7 @@ let muithemeLight = createMuiTheme({
   palette: {
     primary: {
       main: "#575A89",
-      light:"#3F3D56"
+      light: "#3F3D56"
     },
     secondary: {
       main: "#3F3D56"
@@ -18,9 +18,17 @@ let muithemeLight = createMuiTheme({
 muithemeLight = responsiveFontSizes(muithemeLight);
 
 let muithemeDark = createMuiTheme({
+  overrides: {
+    root: {
+      background: "#1E1E1E"
+    }
+  },
   palette: {
     primary: {
-      main: "#424242"
+      main: "#282828"
+    },
+    secondary: {
+      main: "#363333"
     }
   }
 });

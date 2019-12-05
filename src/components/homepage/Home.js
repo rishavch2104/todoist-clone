@@ -4,14 +4,16 @@ import Box from "@material-ui/core/Box";
 
 import { auth } from "./../../firebase/auth";
 import { AuthContext } from "./../../context/AuthContext";
+import { usersCollection } from "./../../firebase/db";
 import Navbar from "../Navbar";
 import Sidebar from "./Sidebar";
 import TodoList from "./TodoList";
+import { DarkModeContext } from "../../context/DarkModeContext";
 
 const Home = props => {
   const { history } = props;
   const { handleLoginChange, handleUidChange } = useContext(AuthContext);
-
+  const { toggleTheme } = useContext(DarkModeContext);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -21,6 +23,15 @@ const Home = props => {
   useEffect(() => {
     auth.onAuthStateChanged(user => {
       if (user) {
+        usersCollection
+          .where("userid", "==", user.uid)
+          .onSnapshot(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              if (doc.data().darkMode === true) {
+                toggleTheme();
+              }
+            });
+          });
         handleUidChange(user.uid);
         handleLoginChange(true);
       } else {
@@ -34,7 +45,7 @@ const Home = props => {
     <>
       <Navbar handleDrawerToggle={handleDrawerToggle} />
 
-      <Box mt={2} width="100%" display="flex">
+      <Box pt={2} width="100%" display="flex">
         <Sidebar
           mobileOpen={mobileOpen}
           handleDrawerToggle={handleDrawerToggle}

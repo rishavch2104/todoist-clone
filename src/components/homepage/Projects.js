@@ -38,8 +38,6 @@ const Projects = props => {
     }
   }, [uid]);
 
-  console.log(projects);
-  console.log(uid);
   return (
     <>
       <Box display="flex" flexDirection="row" justifyContent="space-between">

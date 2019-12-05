@@ -6,7 +6,7 @@ export const todosCollection = firestore.collection("todos");
 
 export const projectsCollection = firestore.collection("projects");
 
-export const UserCollection = firestore.collection("users");
+export const usersCollection = firestore.collection("users");
 
 export const addTodo = async todo => {
   return await todosCollection.add(todo);
@@ -48,7 +48,7 @@ export const removeProjectFromTodo = (id, project) => {
 };
 
 export const addUser = async user => {
-  return await UserCollection.add(user);
+  return await usersCollection.add(user);
 };
 
 export const updateCompleted = async (complete, id) => {

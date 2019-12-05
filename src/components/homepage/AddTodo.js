@@ -49,7 +49,8 @@ function AddTodo() {
     e.preventDefault();
     addTodo({
       task: todo,
-      completion_date: `${selectedDate.getDate()}-${selectedDate.getMonth()}-${selectedDate.getFullYear()}`,
+      completion_date: `${selectedDate.getDate()}-${selectedDate.getMonth() +
+        1}-${selectedDate.getFullYear()}`,
       completion_timestamp: selectedDate,
       userid: uid,
       createdOn: new Date(),

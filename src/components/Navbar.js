@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 function Navbar(props) {
   const { history, handleDrawerToggle } = props;
-  const { toggleTheme } = useContext(DarkModeContext);
+  const { isDarkMode, toggleTheme } = useContext(DarkModeContext);
   const { isLoggedIn } = useContext(AuthContext);
   const classes = useStyles();
   const buttons = [
@@ -41,6 +41,9 @@ function Navbar(props) {
   const handleSignoutClick = () => {
     logoutUser()
       .then(function() {
+        if (isDarkMode === true) {
+          toggleTheme();
+        }
         history.push("/");
       })
       .catch(function(error) {});

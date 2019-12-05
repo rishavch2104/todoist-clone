@@ -79,7 +79,6 @@ function LoginForm(props) {
         });
     }
   });
-  console.log(formik.values);
 
   return (
     <main className={classes.main}>

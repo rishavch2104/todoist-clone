@@ -13,7 +13,7 @@ function App(props) {
   const { isDarkMode } = useContext(DarkModeContext);
 
   return (
-    <MuiThemeProvider theme={isDarkMode ? muithemeLight : muithemeDark}>
+    <MuiThemeProvider theme={isDarkMode ? muithemeDark : muithemeLight}>
       <TodoGroupContextProvider>
         <AuthProvider>
           <ProjectProvider>
