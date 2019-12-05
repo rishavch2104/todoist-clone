@@ -1,47 +1,81 @@
-import React, { useEffect, useState } from "react";
-import { Paper, Grid, List, Divider } from "@material-ui/core";
+import React, { useEffect, useState, useContext } from "react";
+import { withRouter } from "react-router-dom";
+import Container from "@material-ui/core/Container";
+import List from "@material-ui/core/List";
+import Divider from "@material-ui/core/Divider";
+import makeStyles from "@material-ui/styles/makeStyles";
+import { todosCollection } from "./../../firebase/db";
+import { AuthContext } from "../../context/AuthContext";
+import { ProjectContext } from "../../context/ProjectContext";
+import { TodoGroupContext } from "../../context/TodoGroupContext";
 import Todo from "./Todo";
-import { db } from "./../../firebase/auth";
+import AddTodo from "./AddTodo";
+
+const useStyles = makeStyles(theme => ({
+  paper: {
+    height: "100vh",
+    backgroundColor: "#fafafa",
+    flex: 1
+  }
+}));
 
 const TodoList = props => {
-  const [todos, settodos] = useState([]);
+  const { todoGroup } = useContext(TodoGroupContext);
+  const { uid } = useContext(AuthContext);
+  const { projects } = useContext(ProjectContext);
+  const [firebaseTodos, setFirebasetodos] = useState([]);
+  const classes = useStyles();
+
   useEffect(() => {
-    const listener = db
-      .collection("todos")
-      .get()
-      .then(querySnapshot => {
+    if (uid) {
+      todosCollection.where("userid", "==", uid).onSnapshot(querySnapshot => {
+        setFirebasetodos([]);
+
         querySnapshot.forEach(doc => {
-          const data = doc.data();
-          settodos(prev => {
-            return [...prev, data];
-          });
+          setFirebasetodos(firebaseTodos => [
+            ...firebaseTodos,
+            { id: doc.id, ...doc.data() }
+          ]);
         });
       });
-  }, []);
-  console.log(todos);
+    }
+  }, [uid]);
+  let pagetodo = firebaseTodos;
+
+  let today = new Date();
+
+  pagetodo = firebaseTodos.filter(
+    todo =>
+      todo.completion_date ===
+      `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`
+  );
+
+  if (todoGroup === "Tommorow") {
+    let today = new Date();
+    today.setDate(today.getDate() + 1);
+    pagetodo = firebaseTodos.filter(
+      todo =>
+        todo.completion_date ===
+        `${today.getDate()}-${today.getMonth()}-${today.getFullYear()}`
+    );
+  }
+  if (projects.find(project => project.name === todoGroup)) {
+    pagetodo = firebaseTodos.filter(todo => todo.project === todoGroup);
+  }
+
   return (
-    <Paper
-      style={{
-        padding: 0,
-        margin: "0 0 0 20px",
-        width: "70%",
-        height: "100vh",
-        backgroundColor: "#fafafa"
-      }}
-      elevation={0}
-    >
+    <Container className={classes.paper} elevation={0}>
+      <AddTodo />
       <List>
-        {todos.map((todo, i) => (
-          // To add a key to a fragment, we have to use the long-hand version
-          // rather than <> </>, we have to use <React.Fragment>
-          <React.Fragment key={i}>
+        {pagetodo.map(todo => (
+          <>
             <Todo {...todo} key={todo.id} />
-            {i < todos.length - 1 && <Divider />}
-          </React.Fragment>
+            <Divider />
+          </>
         ))}
       </List>
-    </Paper>
+    </Container>
   );
 };
 
-export default TodoList;
+export default withRouter(TodoList);

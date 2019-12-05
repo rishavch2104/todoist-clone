@@ -1,29 +1,60 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { withRouter } from "react-router-dom";
+import Box from "@material-ui/core/Box";
 
-import { Typography, Box } from "@material-ui/core";
-
+import { auth } from "./../../firebase/auth";
+import { AuthContext } from "./../../context/AuthContext";
+import { usersCollection } from "./../../firebase/db";
 import Navbar from "../Navbar";
 import Sidebar from "./Sidebar";
 import TodoList from "./TodoList";
-import { getUserData } from "./../../firebase/auth";
+import { DarkModeContext } from "../../context/DarkModeContext";
 
 const Home = props => {
-  const [todolist, settodolist] = useState("");
-  getUserData();
+  const { history } = props;
+  const { handleLoginChange, handleUidChange } = useContext(AuthContext);
+  const { toggleTheme } = useContext(DarkModeContext);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        usersCollection
+          .where("userid", "==", user.uid)
+          .onSnapshot(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              if (doc.data().darkMode === true) {
+                toggleTheme();
+              }
+            });
+          });
+        handleUidChange(user.uid);
+        handleLoginChange(true);
+      } else {
+        handleLoginChange(false);
+        history.push("/");
+      }
+    });
+  });
 
   return (
-    <div>
-      <main>
-        <Navbar loggedin={true} />
+    <>
+      <Navbar handleDrawerToggle={handleDrawerToggle} />
 
-        <Box margin="20px 200px 20px 200px" display="flex" flexDirection="row">
-          <Sidebar settodolist={settodolist} />
-          <TodoList list={todolist} />
-        </Box>
-      </main>
-      )
-    </div>
+      <Box pt={2} width="100%" display="flex">
+        <Sidebar
+          mobileOpen={mobileOpen}
+          handleDrawerToggle={handleDrawerToggle}
+        />
+
+        <TodoList />
+      </Box>
+    </>
   );
 };
 
-export default Home;
+export default withRouter(Home);
